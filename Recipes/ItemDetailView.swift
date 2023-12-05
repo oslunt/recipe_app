@@ -11,6 +11,8 @@ import MarkdownUI
 
 struct ItemDetailView: View {
     var item: Item
+    @State private var showAddModal = false
+    
     var body: some View {
         NavigationLink {
             ScrollView {
@@ -56,7 +58,12 @@ struct ItemDetailView: View {
                     }
                     .padding()
                 }
-                
+                Button(action: toggleShowAddModal) {
+                    Label("Edit Item", systemImage: "plus")
+                }
+                .sheet(isPresented: $showAddModal) {
+                    AddModal()
+                }
             }
         } label: {
             Text(item.title)
@@ -67,5 +74,9 @@ struct ItemDetailView: View {
                 .foregroundStyle(.yellow)
             }
         }
+    }
+    
+    private func toggleShowAddModal() {
+        showAddModal.toggle()
     }
 }
