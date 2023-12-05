@@ -19,11 +19,11 @@ final class Item: Identifiable {
     var servings: String?
     var expertise: String?
     var calories: String?
-    var recipeCategories: [String]?
+    var recipeCategories: [String]
     var favorite: Bool
     var id = UUID()
     
-    init(title: String, ingredients: [String], instructions: [String], author: String? = nil, date: Date? = nil, timeRequired: String? = nil, servings: String? = nil, expertise: String? = nil, calories: String? = nil, recipeCategories: [String]? = nil, favorite: Bool) {
+    init(title: String, ingredients: [String], instructions: [String], author: String? = nil, date: Date? = nil, timeRequired: String? = nil, servings: String? = nil, expertise: String? = nil, calories: String? = nil, recipeCategories: [String], favorite: Bool) {
         self.title = title
         self.ingredients = ingredients
         self.instructions = instructions

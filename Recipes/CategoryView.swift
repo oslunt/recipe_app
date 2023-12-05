@@ -16,7 +16,7 @@ struct CategoryView: View {
     
     init(category: String) {
         _items = Query(filter: #Predicate<Item> { item in
-            item.recipeCategories?.contains(category) ?? true
+            item.recipeCategories.contains(category)
         })
     }
     
@@ -96,7 +96,7 @@ struct CategoryView: View {
         withAnimation {
             if let recipes = loadJson(filename: "SampleData") {
                 for recipe in recipes {
-                    modelContext.insert(Item(title: recipe.title, ingredients: [recipe.ingredients], instructions: [recipe.instructions], author: "", date: nil, timeRequired: "", servings: "", expertise: "", calories: "", recipeCategories: nil, favorite: false))
+                    modelContext.insert(Item(title: recipe.title, ingredients: [recipe.ingredients], instructions: [recipe.instructions], author: "", date: nil, timeRequired: "", servings: "", expertise: "", calories: "", recipeCategories: [], favorite: false))
                 }
             }
         }
