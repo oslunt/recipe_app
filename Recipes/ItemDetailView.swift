@@ -23,24 +23,29 @@ struct ItemDetailView: View {
                         }
                         Heading(.level6) {
                             if let author = item.author {
-                                 "\t by " + author
+                                "\t by " + author
                             }
                         }
                         Paragraph {
-                            if let date = item.date {
-                                 DateFormatter().string(from: date)
-                            }
                             if let timeRequired = item.timeRequired {
-                                "\nTime Required: " + timeRequired
+                                if timeRequired.count > 0 {
+                                    "\nTime Required: " + timeRequired
+                                }
                             }
                             if let servings = item.servings {
-                                "\tServings: " + servings
+                                if servings.count > 0 {
+                                    "\tServings: " + servings
+                                }
                             }
                             if let expertise = item.expertise {
-                                "\nExpertise: " + expertise
+                                if expertise.count > 0 {
+                                    "\nExpertise: " + expertise
+                                }
                             }
                             if let calories = item.calories {
-                                "\tCalories: " + calories
+                                if calories.count > 0 {
+                                    "\tCalories: " + calories
+                                }
                             }
                         }
                         Heading(.level4) {
@@ -58,20 +63,24 @@ struct ItemDetailView: View {
                     }
                     .padding()
                 }
-                Button(action: toggleShowAddModal) {
-                    Label("Edit Item", systemImage: "plus")
-                }
-                .sheet(isPresented: $showAddModal) {
-                    AddModal()
+            }
+            .toolbar {
+                ToolbarItem {
+                    Button(action: toggleShowAddModal) {
+                        Label("Edit Item", systemImage: "pencil")
+                    }
+                    .sheet(isPresented: $showAddModal) {
+                        AddModal(recipe: item)
+                    }
                 }
             }
         } label: {
             Text(item.title)
             Spacer()
-
+            
             if item.favorite {
                 Image(systemName: "star.fill")
-                .foregroundStyle(.yellow)
+                    .foregroundStyle(.yellow)
             }
         }
     }

@@ -18,7 +18,7 @@
 		FC046B9E2B15440800814ADB /* RecipesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC046B9D2B15440800814ADB /* RecipesTests.swift */; };
 		FC046BA82B15440800814ADB /* RecipesUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC046BA72B15440800814ADB /* RecipesUITests.swift */; };
 		FC046BAA2B15440800814ADB /* RecipesUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC046BA92B15440800814ADB /* RecipesUITestsLaunchTests.swift */; };
-		FC046BB82B15456600814ADB /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = FC046BB72B15456600814ADB /* MarkdownUI */; };
+		FC046BB82B15456600814ADB /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = FC046BB72B15456600814ADB /* MarkdownUI */; settings = {ATTRIBUTES = (Required, ); }; };
 		FC6684512B16A542004B9495 /* SampleRecipes.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC6684502B16A542004B9495 /* SampleRecipes.swift */; };
 		FC6684532B16A8A4004B9495 /* SampleData.json in Resources */ = {isa = PBXBuildFile; fileRef = FC6684522B16A8A4004B9495 /* SampleData.json */; };
 /* End PBXBuildFile section */

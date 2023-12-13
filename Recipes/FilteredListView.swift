@@ -17,13 +17,6 @@ struct FilteredListView: View {
     private var filterFavorites: Bool
     @State private var searchTerm = ""
     @Query private var items: [Item]
-    private var filteredItems: [Item] {
-        if !searchTerm.isEmpty {
-            return items.filter { $0.title.contains(searchTerm) }
-        } else {
-            return items
-        }
-    }
     
     init(filterCategories: Bool, category: String, filterFavorites: Bool, searchTerm: String = "") {
         self.filterCategories = filterCategories
@@ -31,10 +24,7 @@ struct FilteredListView: View {
         self.filterFavorites = filterFavorites
         self.searchTerm = searchTerm
         _items = Query(filter: #Predicate<Item> { item in
-            if filterCategories && category != "" {
-                return item.recipeCategories.contains(category)
-            }
-            else if filterFavorites {
+            if filterFavorites {
                 return item.favorite
             }
             else if searchTerm != "" {
@@ -48,8 +38,15 @@ struct FilteredListView: View {
     
     var body: some View {
         List {
-            ForEach(filteredItems) { item in
-                ItemDetailView(item: item)
+            ForEach(items) { item in
+                if filterCategories == true && category != "" {
+                    if item.recipeCategories.contains(category) {
+                        ItemDetailView(item: item)
+                    }
+                } 
+                else {
+                    ItemDetailView(item: item)
+                }
             }
             .onDelete(perform: deleteItems)
         }
@@ -90,7 +87,7 @@ struct FilteredListView: View {
         withAnimation {
             if let recipes = loadJson(filename: "SampleData") {
                 for recipe in recipes {
-                    modelContext.insert(Item(title: recipe.title, ingredients: [recipe.ingredients], instructions: [recipe.instructions], author: "", date: nil, timeRequired: "", servings: "", expertise: "", calories: "", recipeCategories: [], favorite: false))
+                    modelContext.insert(Item(title: recipe.title, ingredients: [recipe.ingredients], instructions: [recipe.instructions], author: "", timeRequired: "", servings: "", expertise: "", calories: "", recipeCategories: [], favorite: false))
                 }
             }
         }
