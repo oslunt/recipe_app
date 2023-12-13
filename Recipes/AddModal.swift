@@ -60,7 +60,7 @@ struct AddModal: View {
                         .onDelete(perform: { indexSet in
                             instructions.remove(atOffsets: indexSet)
                         })
-                        .deleteDisabled((isEditingSection2 || isEditingSection3))
+                        .deleteDisabled(!isEditingSection1)
                     }
                     if isEditingSection1 {
                         Button {
@@ -72,7 +72,16 @@ struct AddModal: View {
                         }
                     }
                 }
-                Section(header: EditingButton(isEditing: $isEditingSection2).overlay(Text("Ingredients"))) {
+                Section(header: EditingButton(isEditing: $isEditingSection2).frame(maxWidth: .infinity, alignment: .trailing) //<=== Here
+                    .overlay(
+                        HStack {
+                            Image(systemName: "folder")
+                                .foregroundColor(Color.gray)
+                        Text("Ingredients")
+                            .textCase(.none)
+                            .foregroundColor(Color.gray)
+                        }, alignment: .leading)
+                    .foregroundColor(.blue)) {
                     List {
                         ForEach(ingredients.indices, id: \.self) { index in
                             TextField("Ingredient \(index + 1)", text: $ingredients[index])
@@ -80,7 +89,7 @@ struct AddModal: View {
                         .onDelete(perform: { indexSet in
                             ingredients.remove(atOffsets: indexSet)
                         })
-                        .deleteDisabled((isEditingSection1 || isEditingSection3))
+                        .deleteDisabled(!isEditingSection2)
                     }
                     if isEditingSection2 {
                         Button {
@@ -90,7 +99,16 @@ struct AddModal: View {
                         }
                     }
                 }
-                Section(header: EditingButton(isEditing: $isEditingSection3).overlay(Text("Categories"))) {
+                Section(header: EditingButton(isEditing: $isEditingSection3).frame(maxWidth: .infinity, alignment: .trailing) //<=== Here
+                    .overlay(
+                        HStack {
+                            Image(systemName: "folder")
+                                .foregroundColor(Color.gray)
+                        Text("Recipe Categories")
+                            .textCase(.none)
+                            .foregroundColor(Color.gray)
+                        }, alignment: .leading)
+                    .foregroundColor(.blue)) {
                     List {
                         ForEach(recipeCategories.indices, id: \.self) { index in
                             TextField("Category \(index + 1)", text: $recipeCategories[index])
@@ -98,7 +116,7 @@ struct AddModal: View {
                         .onDelete(perform: { indexSet in
                             recipeCategories.remove(atOffsets: indexSet)
                         })
-                        .deleteDisabled((isEditingSection2 || isEditingSection1))
+                        .deleteDisabled(!isEditingSection3)
                     }
                     if isEditingSection3 {
                         Button {
