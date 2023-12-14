@@ -18,9 +18,9 @@ struct AddModal: View {
     @State private var servings = ""
     @State private var expertise = ""
     @State private var calories = ""
-    @State private var instructions: [String] = []
-    @State private var ingredients: [String] = []
-    @State private var recipeCategories: [String] = []
+    @State private var instructions: [IteratableString] = []
+    @State private var ingredients: [IteratableString] = []
+    @State private var recipeCategories: [IteratableString] = []
     @State private var favorite: Bool = false
     var recipe: Item?
     
@@ -54,8 +54,9 @@ struct AddModal: View {
                         }, alignment: .leading)
                     .foregroundColor(.blue)) {
                     List {
-                        ForEach(instructions.indices, id: \.self) { index in
-                            TextField("Step \(index + 1)", text: $instructions[index])
+                        ForEach(instructions) { instruction in
+                            let index = instructions.firstIndex(of: instruction) ?? 0
+                            TextField("Step \(index + 1)", text: $instructions[index].content)
                         }
                         .onDelete(perform: { indexSet in
                             instructions.remove(atOffsets: indexSet)
@@ -65,7 +66,7 @@ struct AddModal: View {
                     if isEditingSection1 {
                         Button {
                             withAnimation {
-                                instructions.append("")
+                                instructions.append(IteratableString(content: ""))
                             }
                         } label: {
                             Text("Add Step")
@@ -83,8 +84,9 @@ struct AddModal: View {
                         }, alignment: .leading)
                     .foregroundColor(.blue)) {
                     List {
-                        ForEach(ingredients.indices, id: \.self) { index in
-                            TextField("Ingredient \(index + 1)", text: $ingredients[index])
+                        ForEach(ingredients) { ingredient in
+                            let index = ingredients.firstIndex(of: ingredient) ?? 0
+                            TextField("Ingredient \(index + 1)", text: $ingredients[index].content)
                         }
                         .onDelete(perform: { indexSet in
                             ingredients.remove(atOffsets: indexSet)
@@ -93,7 +95,7 @@ struct AddModal: View {
                     }
                     if isEditingSection2 {
                         Button {
-                            ingredients.append("")
+                            ingredients.append(IteratableString(content: ""))
                         } label: {
                             Text("Add Ingredient")
                         }
@@ -110,8 +112,9 @@ struct AddModal: View {
                         }, alignment: .leading)
                     .foregroundColor(.blue)) {
                     List {
-                        ForEach(recipeCategories.indices, id: \.self) { index in
-                            TextField("Category \(index + 1)", text: $recipeCategories[index])
+                        ForEach(recipeCategories) { recipeCategory in
+                            let index = recipeCategories.firstIndex(of: recipeCategory) ?? 0
+                            TextField("Step \(index + 1)", text: $recipeCategories[index].content)
                         }
                         .onDelete(perform: { indexSet in
                             recipeCategories.remove(atOffsets: indexSet)
@@ -120,7 +123,7 @@ struct AddModal: View {
                     }
                     if isEditingSection3 {
                         Button {
-                            recipeCategories.append("")
+                            recipeCategories.append(IteratableString(content: ""))
                         } label: {
                             Text("Add Category")
                         }
@@ -164,7 +167,10 @@ struct AddModal: View {
     
     private func deleteInstruction(indexSet: IndexSet) {
         withAnimation {
-            instructions.remove(atOffsets: indexSet)
+            indexSet.forEach {
+                instructions.remove(at: $0)
+            }
+//            instructions.remove(atOffsets: indexSet)
         }
     }
     

@@ -18,6 +18,7 @@ struct FilteredListView: View {
     @State private var searchTerm = ""
     @Query private var items: [Item]
     
+    
     init(filterCategories: Bool, category: String, filterFavorites: Bool, searchTerm: String = "") {
         self.filterCategories = filterCategories
         self.category = category
@@ -40,15 +41,25 @@ struct FilteredListView: View {
         List {
             ForEach(items) { item in
                 if filterCategories == true && category != "" {
-                    if item.recipeCategories.contains(category) {
-                        ItemDetailView(item: item)
+                    ForEach(item.recipeCategories) { recipeCategory in
+                        if(recipeCategory.content == category) {
+                            ItemDetailView(item: item)
+                        }
                     }
+//                    if item.recipeCategories.contains(category) {
+//                        ItemDetailView(item: item)
+//                    }
                 } 
                 else {
                     ItemDetailView(item: item)
                 }
             }
             .onDelete(perform: deleteItems)
+        }
+        .onAppear {
+            if items.isEmpty {
+                initializeRecipes()
+            }
         }
         .searchable(text: $searchTerm)
         .toolbar {
@@ -87,7 +98,7 @@ struct FilteredListView: View {
         withAnimation {
             if let recipes = loadJson(filename: "SampleData") {
                 for recipe in recipes {
-                    modelContext.insert(Item(title: recipe.title, ingredients: [recipe.ingredients], instructions: [recipe.instructions], author: "", timeRequired: "", servings: "", expertise: "", calories: "", recipeCategories: [], favorite: false))
+                    modelContext.insert(Item(title: recipe.title, ingredients: [IteratableString(content: recipe.ingredients)], instructions: [IteratableString(content: recipe.instructions)], author: "", timeRequired: "", servings: "", expertise: "", calories: "", recipeCategories: [], favorite: false))
                 }
             }
         }

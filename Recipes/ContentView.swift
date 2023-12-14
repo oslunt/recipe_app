@@ -13,13 +13,7 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var items: [Item]
     private var categories: Set<String> {
-        var setCategories = Set<String>()
-        
-        for item in items {
-            setCategories.formUnion(item.recipeCategories)
-        }
-        
-        return setCategories
+        Set(items.flatMap { $0.recipeCategories.map(\.content) })
     }
 
     var body: some View {

@@ -11,18 +11,18 @@ import SwiftData
 @Model
 final class Item: Identifiable {
     var title: String
-    var ingredients: [String]
-    var instructions: [String]
+    var ingredients: [IteratableString]
+    var instructions: [IteratableString]
     var author: String?
     var timeRequired: String?
     var servings: String?
     var expertise: String?
     var calories: String?
-    var recipeCategories: [String]
+    var recipeCategories: [IteratableString]
     var favorite: Bool
     var id = UUID()
     
-    init(title: String, ingredients: [String], instructions: [String], author: String? = nil, timeRequired: String? = nil, servings: String? = nil, expertise: String? = nil, calories: String? = nil, recipeCategories: [String], favorite: Bool) {
+    init(title: String, ingredients: [IteratableString], instructions: [IteratableString], author: String? = nil, timeRequired: String? = nil, servings: String? = nil, expertise: String? = nil, calories: String? = nil, recipeCategories: [IteratableString], favorite: Bool) {
         self.title = title
         self.ingredients = ingredients
         self.instructions = instructions
@@ -33,5 +33,14 @@ final class Item: Identifiable {
         self.calories = calories
         self.recipeCategories = recipeCategories
         self.favorite = favorite
+    }
+}
+
+struct IteratableString: Identifiable, Equatable, Hashable, Codable {
+    var id = UUID()
+    var content: String
+    
+    static func == (lhs: IteratableString, rhs: IteratableString) -> Bool {
+        return lhs.id == rhs.id && lhs.content == rhs.content
     }
 }
