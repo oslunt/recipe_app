@@ -28,7 +28,7 @@ struct AddModal: View {
     @State private var isEditingSection2 = false
     @State private var isEditingSection3 = false
     
-    private var isEditingOn: Bool { //<=== Here
+    private var isEditingOn: Bool {
         isEditingSection1 || isEditingSection2 || isEditingSection3
     }
     
@@ -43,7 +43,7 @@ struct AddModal: View {
                     TextField("Expertise", text: $expertise)
                     TextField("Calories", text: $calories)
                 }
-                Section(header: EditingButton(isEditing: $isEditingSection1).frame(maxWidth: .infinity, alignment: .trailing) //<=== Here
+                Section(header: EditingButton(isEditing: $isEditingSection1).frame(maxWidth: .infinity, alignment: .trailing)
                     .overlay(
                         HStack {
                             Image(systemName: "folder")
@@ -61,7 +61,11 @@ struct AddModal: View {
                         .onDelete(perform: { indexSet in
                             instructions.remove(atOffsets: indexSet)
                         })
+                        .onMove(perform: { indices, newOffset in
+                            instructions.move(fromOffsets: indices, toOffset: newOffset)
+                        })
                         .deleteDisabled(!isEditingSection1)
+                        .moveDisabled(!isEditingSection1)
                     }
                     if isEditingSection1 {
                         Button {
@@ -73,7 +77,7 @@ struct AddModal: View {
                         }
                     }
                 }
-                Section(header: EditingButton(isEditing: $isEditingSection2).frame(maxWidth: .infinity, alignment: .trailing) //<=== Here
+                Section(header: EditingButton(isEditing: $isEditingSection2).frame(maxWidth: .infinity, alignment: .trailing)
                     .overlay(
                         HStack {
                             Image(systemName: "folder")
@@ -91,7 +95,11 @@ struct AddModal: View {
                         .onDelete(perform: { indexSet in
                             ingredients.remove(atOffsets: indexSet)
                         })
+                        .onMove(perform: { indices, newOffset in
+                            ingredients.move(fromOffsets: indices, toOffset: newOffset)
+                        })
                         .deleteDisabled(!isEditingSection2)
+                        .moveDisabled(!isEditingSection2)
                     }
                     if isEditingSection2 {
                         Button {
@@ -101,7 +109,7 @@ struct AddModal: View {
                         }
                     }
                 }
-                Section(header: EditingButton(isEditing: $isEditingSection3).frame(maxWidth: .infinity, alignment: .trailing) //<=== Here
+                Section(header: EditingButton(isEditing: $isEditingSection3).frame(maxWidth: .infinity, alignment: .trailing)
                     .overlay(
                         HStack {
                             Image(systemName: "folder")
@@ -119,7 +127,11 @@ struct AddModal: View {
                         .onDelete(perform: { indexSet in
                             recipeCategories.remove(atOffsets: indexSet)
                         })
+                        .onMove(perform: { indices, newOffset in
+                            recipeCategories.move(fromOffsets: indices, toOffset: newOffset)
+                        })
                         .deleteDisabled(!isEditingSection3)
+                        .moveDisabled(!isEditingSection3)
                     }
                     if isEditingSection3 {
                         Button {
@@ -162,27 +174,6 @@ struct AddModal: View {
                 }
             }
             .environment(\.editMode, isEditingOn ? .constant(.active) : .constant(.inactive))
-        }
-    }
-    
-    private func deleteInstruction(indexSet: IndexSet) {
-        withAnimation {
-            indexSet.forEach {
-                instructions.remove(at: $0)
-            }
-//            instructions.remove(atOffsets: indexSet)
-        }
-    }
-    
-    private func deleteIngredient(indexSet: IndexSet) {
-        withAnimation {
-            ingredients.remove(atOffsets: indexSet)
-        }
-    }
-
-    private func deleteRecipeCategory(indexSet: IndexSet) {
-        withAnimation {
-            recipeCategories.remove(atOffsets: indexSet)
         }
     }
     

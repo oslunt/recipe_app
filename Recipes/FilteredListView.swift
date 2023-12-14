@@ -17,7 +17,14 @@ struct FilteredListView: View {
     private var filterFavorites: Bool
     @State private var searchTerm = ""
     @Query private var items: [Item]
-    
+    private var filteredItems: [Item] {
+        if searchTerm != "" {
+            return items.filter { $0.title.contains(searchTerm) }
+        }
+        else {
+            return items
+        }
+    }
     
     init(filterCategories: Bool, category: String, filterFavorites: Bool, searchTerm: String = "") {
         self.filterCategories = filterCategories
@@ -28,9 +35,6 @@ struct FilteredListView: View {
             if filterFavorites {
                 return item.favorite
             }
-            else if searchTerm != "" {
-                return item.title.contains(searchTerm)
-            }
             else {
                 return true
             }
@@ -39,16 +43,13 @@ struct FilteredListView: View {
     
     var body: some View {
         List {
-            ForEach(items) { item in
+            ForEach(filteredItems) { item in
                 if filterCategories == true && category != "" {
                     ForEach(item.recipeCategories) { recipeCategory in
                         if(recipeCategory.content == category) {
                             ItemDetailView(item: item)
                         }
                     }
-//                    if item.recipeCategories.contains(category) {
-//                        ItemDetailView(item: item)
-//                    }
                 } 
                 else {
                     ItemDetailView(item: item)
