@@ -9,10 +9,12 @@ import SwiftUI
 import SwiftData
 import MarkdownUI
 
+//https://stackoverflow.com/questions/76742198/swiftdata-search-bar-and-predicate
+
 struct FilteredListView: View {
     @Environment(\.modelContext) private var modelContext
-    @State private var showAddModal = false
     @Query private var allItems: [Item]
+    @State private var showAddModal = false
     @State private var searchTerm = ""
     @State private var items: [Item] = []
     private var category: String

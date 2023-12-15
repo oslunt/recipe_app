@@ -9,6 +9,8 @@ import SwiftUI
 import SwiftData
 import MarkdownUI
 
+//https://developer.apple.com/forums/thread/712871
+
 struct AddModalArraySection: View {
     @Binding var recipeItemArray: [IteratableString]
     var title: String
