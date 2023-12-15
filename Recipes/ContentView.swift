@@ -21,13 +21,13 @@ struct ContentView: View {
             List {
                 Section(header: Text("Top Level Actions")) {
                     NavigationLink {
-                        FilteredListView(filterCategories: false, category: "", filterFavorites: false, searchTerm: "")
+                        FilteredListView(category: "", filterIsFavorite: false, items: items)
                     } label: {
                         Text("Browse All")
                     }
                     
                     NavigationLink {
-                        FilteredListView(filterCategories: false, category: "", filterFavorites: true, searchTerm: "")
+                        FilteredListView(category: "", filterIsFavorite: true, items: items.filter { $0.favorite })
                     } label: {
                         Text("Favorites")
                     }
@@ -35,7 +35,7 @@ struct ContentView: View {
                 Section(header: Text("Categories")) {
                     ForEach(Array(categories), id: \.self) { category in
                         NavigationLink {
-                            FilteredListView(filterCategories: true, category: category, filterFavorites: false, searchTerm: "")
+                            FilteredListView(category: category, filterIsFavorite: false, items: items.filter { $0.contains(wherestring: category)})
                         } label: {
                             Text(category)
                         }
@@ -43,7 +43,7 @@ struct ContentView: View {
                 }
             }
         } content: {
-            FilteredListView(filterCategories: false, category: "", filterFavorites: false, searchTerm: "")
+            FilteredListView(category: "",  filterIsFavorite: false, items: items)
         } detail: {
             Text("Select an item")
         }

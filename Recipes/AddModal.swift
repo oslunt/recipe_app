@@ -24,14 +24,6 @@ struct AddModal: View {
     @State private var favorite: Bool = false
     var recipe: Item?
     
-    @State private var isEditingSection1 = false
-    @State private var isEditingSection2 = false
-    @State private var isEditingSection3 = false
-    
-    private var isEditingOn: Bool {
-        isEditingSection1 || isEditingSection2 || isEditingSection3
-    }
-    
     var body: some View {
         NavigationStack {
             Form {
@@ -43,104 +35,11 @@ struct AddModal: View {
                     TextField("Expertise", text: $expertise)
                     TextField("Calories", text: $calories)
                 }
-                Section(header: EditingButton(isEditing: $isEditingSection1).frame(maxWidth: .infinity, alignment: .trailing)
-                    .overlay(
-                        HStack {
-                            Image(systemName: "folder")
-                                .foregroundColor(Color.gray)
-                        Text("Instructions")
-                            .textCase(.none)
-                            .foregroundColor(Color.gray)
-                        }, alignment: .leading)
-                    .foregroundColor(.blue)) {
-                    List {
-                        ForEach(instructions) { instruction in
-                            let index = instructions.firstIndex(of: instruction) ?? 0
-                            TextField("Step \(index + 1)", text: $instructions[index].content)
-                        }
-                        .onDelete(perform: { indexSet in
-                            instructions.remove(atOffsets: indexSet)
-                        })
-                        .onMove(perform: { indices, newOffset in
-                            instructions.move(fromOffsets: indices, toOffset: newOffset)
-                        })
-                        .deleteDisabled(!isEditingSection1)
-                        .moveDisabled(!isEditingSection1)
-                    }
-                    if isEditingSection1 {
-                        Button {
-                            withAnimation {
-                                instructions.append(IteratableString(content: ""))
-                            }
-                        } label: {
-                            Text("Add Step")
-                        }
-                    }
-                }
-                Section(header: EditingButton(isEditing: $isEditingSection2).frame(maxWidth: .infinity, alignment: .trailing)
-                    .overlay(
-                        HStack {
-                            Image(systemName: "folder")
-                                .foregroundColor(Color.gray)
-                        Text("Ingredients")
-                            .textCase(.none)
-                            .foregroundColor(Color.gray)
-                        }, alignment: .leading)
-                    .foregroundColor(.blue)) {
-                    List {
-                        ForEach(ingredients) { ingredient in
-                            let index = ingredients.firstIndex(of: ingredient) ?? 0
-                            TextField("Ingredient \(index + 1)", text: $ingredients[index].content)
-                        }
-                        .onDelete(perform: { indexSet in
-                            ingredients.remove(atOffsets: indexSet)
-                        })
-                        .onMove(perform: { indices, newOffset in
-                            ingredients.move(fromOffsets: indices, toOffset: newOffset)
-                        })
-                        .deleteDisabled(!isEditingSection2)
-                        .moveDisabled(!isEditingSection2)
-                    }
-                    if isEditingSection2 {
-                        Button {
-                            ingredients.append(IteratableString(content: ""))
-                        } label: {
-                            Text("Add Ingredient")
-                        }
-                    }
-                }
-                Section(header: EditingButton(isEditing: $isEditingSection3).frame(maxWidth: .infinity, alignment: .trailing)
-                    .overlay(
-                        HStack {
-                            Image(systemName: "folder")
-                                .foregroundColor(Color.gray)
-                        Text("Recipe Categories")
-                            .textCase(.none)
-                            .foregroundColor(Color.gray)
-                        }, alignment: .leading)
-                    .foregroundColor(.blue)) {
-                    List {
-                        ForEach(recipeCategories) { recipeCategory in
-                            let index = recipeCategories.firstIndex(of: recipeCategory) ?? 0
-                            TextField("Step \(index + 1)", text: $recipeCategories[index].content)
-                        }
-                        .onDelete(perform: { indexSet in
-                            recipeCategories.remove(atOffsets: indexSet)
-                        })
-                        .onMove(perform: { indices, newOffset in
-                            recipeCategories.move(fromOffsets: indices, toOffset: newOffset)
-                        })
-                        .deleteDisabled(!isEditingSection3)
-                        .moveDisabled(!isEditingSection3)
-                    }
-                    if isEditingSection3 {
-                        Button {
-                            recipeCategories.append(IteratableString(content: ""))
-                        } label: {
-                            Text("Add Category")
-                        }
-                    }
-                }
+                
+                AddModalArraySection(recipeItemArray: $instructions, title: "Instructions", singularType: "Step")
+                AddModalArraySection(recipeItemArray: $ingredients, title: "Ingredients", singularType: "Ingredient")
+                AddModalArraySection(recipeItemArray: $recipeCategories, title: "Categories", singularType: "Category")
+                
                 Toggle("Favorite", isOn: $favorite)
             }
             .toolbar {
@@ -152,6 +51,9 @@ struct AddModal: View {
                         }
                     }
                     .disabled($title.wrappedValue.count == 0 || $instructions.isEmpty || $ingredients.isEmpty)
+                }
+                ToolbarItem {
+                    EditButton()
                 }
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel", role: .cancel) {
@@ -173,7 +75,6 @@ struct AddModal: View {
                     favorite = recipe.favorite
                 }
             }
-            .environment(\.editMode, isEditingOn ? .constant(.active) : .constant(.inactive))
         }
     }
     
@@ -192,18 +93,6 @@ struct AddModal: View {
         } else {
             let newItem = Item(title: title, ingredients: ingredients, instructions: instructions, author: author, timeRequired: timeRequired, servings: servings, expertise: expertise, calories: calories, recipeCategories: recipeCategories, favorite: favorite)
             modelContext.insert(newItem)
-        }
-    }
-}
-
-struct EditingButton: View {
-    @Binding var isEditing: Bool
-
-    var body: some View {
-        Button(isEditing ? "DONE" : "EDIT") {
-            withAnimation {
-                isEditing.toggle()
-            }
         }
     }
 }

@@ -12,11 +12,11 @@ import MarkdownUI
 struct FilteredListView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var showAddModal = false
-    private var filterCategories: Bool
-    private var category: String
-    private var filterFavorites: Bool
+    @Query private var allItems: [Item]
     @State private var searchTerm = ""
-    @Query private var items: [Item]
+    @State private var items: [Item] = []
+    private var category: String
+    private var filterIsFavorite: Bool
     private var filteredItems: [Item] {
         if searchTerm != "" {
             return items.filter { $0.title.contains(searchTerm) }
@@ -26,41 +26,18 @@ struct FilteredListView: View {
         }
     }
     
-    init(filterCategories: Bool, category: String, filterFavorites: Bool, searchTerm: String = "") {
-        self.filterCategories = filterCategories
+    init(category: String, filterIsFavorite: Bool, items: [Item]) {
         self.category = category
-        self.filterFavorites = filterFavorites
-        self.searchTerm = searchTerm
-        _items = Query(filter: #Predicate<Item> { item in
-            if filterFavorites {
-                return item.favorite
-            }
-            else {
-                return true
-            }
-        })
+        self.filterIsFavorite = filterIsFavorite
+        _items = State(initialValue: items)
     }
     
     var body: some View {
         List {
             ForEach(filteredItems) { item in
-                if filterCategories == true && category != "" {
-                    ForEach(item.recipeCategories) { recipeCategory in
-                        if(recipeCategory.content == category) {
-                            ItemDetailView(item: item)
-                        }
-                    }
-                } 
-                else {
-                    ItemDetailView(item: item)
-                }
+                ItemDetailView(item: item)
             }
             .onDelete(perform: deleteItems)
-        }
-        .onAppear {
-            if items.isEmpty {
-                initializeRecipes()
-            }
         }
         .searchable(text: $searchTerm)
         .toolbar {
@@ -69,14 +46,26 @@ struct FilteredListView: View {
             }
             ToolbarItem {
                 Button(action: initializeRecipes) {
-                    Label("Initialize", systemImage: "folder.badge.plus")
+                    Label("Initialize Recipes", systemImage: "square.and.pencil")
                 }
             }
             ToolbarItem {
                 Button(action: toggleShowAddModal) {
                     Label("Add Item", systemImage: "plus")
                 }
-                .sheet(isPresented: $showAddModal) {
+                .sheet(isPresented: $showAddModal, onDismiss: {
+                    withAnimation {
+                        if category != "" {
+                            items = allItems.filter { $0.contains(wherestring: category) }
+                        }
+                        else if filterIsFavorite {
+                            items = allItems.filter { $0.favorite }
+                        }
+                        else {
+                            items = allItems
+                        }
+                    }
+                }) {
                     AddModal()
                 }
             }
@@ -88,9 +77,28 @@ struct FilteredListView: View {
     }
 
     private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
+        if category != "" {
+            withAnimation {
+                for index in offsets {
+                    let tempItem = Item(title: items[index].title, ingredients: items[index].ingredients, instructions: items[index].instructions, author: items[index].author, timeRequired: items[index].timeRequired, servings: items[index].servings, expertise: items[index].expertise, calories: items[index].calories, recipeCategories: items[index].recipeCategories, favorite: items[index].favorite)
+                    tempItem.recipeCategories = []
+                    for recipeCategory in tempItem.recipeCategories {
+                        if recipeCategory.content != category {
+                            tempItem.recipeCategories.append(recipeCategory)
+                        }
+                    }
+                    modelContext.delete(items[index])
+                    modelContext.insert(tempItem)
+                    items.remove(at: index)
+                }
+            }
+        }
+        else {
+            withAnimation {
+                for index in offsets {
+                    modelContext.delete(items[index])
+                    items.remove(at: index)
+                }
             }
         }
     }
@@ -99,7 +107,9 @@ struct FilteredListView: View {
         withAnimation {
             if let recipes = loadJson(filename: "SampleData") {
                 for recipe in recipes {
-                    modelContext.insert(Item(title: recipe.title, ingredients: [IteratableString(content: recipe.ingredients)], instructions: [IteratableString(content: recipe.instructions)], author: "", timeRequired: "", servings: "", expertise: "", calories: "", recipeCategories: [], favorite: false))
+                    let newItem = Item(title: recipe.title, ingredients: [IteratableString(content: recipe.ingredients)], instructions: [IteratableString(content: recipe.instructions)], author: "", timeRequired: "", servings: "", expertise: "", calories: "", recipeCategories: [], favorite: false)
+                    modelContext.insert(newItem)
+                    items.append(newItem)
                 }
             }
         }

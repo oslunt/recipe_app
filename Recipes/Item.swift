@@ -34,13 +34,13 @@ final class Item: Identifiable {
         self.recipeCategories = recipeCategories
         self.favorite = favorite
     }
-}
-
-struct IteratableString: Identifiable, Equatable, Hashable, Codable {
-    var id = UUID()
-    var content: String
     
-    static func == (lhs: IteratableString, rhs: IteratableString) -> Bool {
-        return lhs.id == rhs.id && lhs.content == rhs.content
+    func contains(wherestring: String) -> Bool {
+        for recipeCategory in recipeCategories {
+            if recipeCategory.content == wherestring {
+                return true
+            }
+        }
+        return false
     }
 }
